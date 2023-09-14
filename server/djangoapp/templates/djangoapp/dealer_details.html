@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Dealership Review</title>
@@ -7,12 +8,59 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 
-    <body>
+<body>
 
     <!--Add a nav bar here -->
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Dealership Review</a>
+                <a class="navbar-brand" href="{% url 'djangoapp:about' %}">About Us</a>
+                <a class="navbar-brand" href="{% url 'djangoapp:contact' %}">Contact Us</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                <li>
+                    <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
+                    <a class="btn btn-link" href="{% url 'djangoapp:logout' %}">Logout</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="add_review">Add review</a>
+                </li>
+                {% else %}
+                <li>
+                    <form class="form-inline" action="{% url 'djangoapp:login' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Username" name="username">
+                            <input type="password" class="form-control" placeholder="Password" name="psw">
+                            <button class="btn btn-primary" type="submit">Login</button>
+                            <a class="btn btn-link" href="{% url 'djangoapp:registration' %}">Sign Up</a>
+                        </div>
+                    </form>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
 
     <!-- Add reviews as cards -->
+    <div class="card-columns">
+        {% for review in reviews %}
+        <div class="card text-dark bg-light mb-3 text-left">
+            <div class="card-header">{{review.name}}</div>
+            <img height="40px" length="40px" src="{{MEDIA_URL}}/emoji/{{review.sentiment}}.png" class="card-img-left">
+            <div class="card-body">
+                <h5 class="card-title">{{ review.car_make }}, {{ review.car_model }}</h5>
+                <h5 class="card-title">{{ review.car_year }}</h5>
+                <p class="card-text">{{ review.review }}</p>
+            </div>
+        </div>
+        {% endfor %} {% if reviews|length == 0 %}
+        <h1>This dealership has no reviews to show</h1>
+        {% endif %}
+    </div>
 
-    </body>
+</body>
 
 </html>
